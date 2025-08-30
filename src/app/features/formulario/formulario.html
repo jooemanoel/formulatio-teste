@@ -1,0 +1,99 @@
+<div class="container-fluid p-1 text-end">
+  <button mat-icon-button (click)="alternarTema()">
+    <mat-icon>brightness_6</mat-icon>
+  </button>
+</div>
+<form [formGroup]="formulario">
+  <div class="container p-3">
+    <mat-card appearance="raised">
+      <mat-card-header class="pb-3">
+        <mat-card-title>Inclusão</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row">
+          <div class="col-12 col-lg-6">
+            <mat-form-field class="w-100 pb-1">
+              <mat-label>Nome</mat-label>
+              <input matInput type="text" formControlName="nome" />
+              @if(erroNome()) {
+              <mat-error>{{ erroNome() }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-3">
+            <mat-form-field class="w-100 pb-1">
+              <mat-label>Tipo de Avaliação</mat-label>
+              <mat-select formControlName="tipoAvaliacao">
+                @for(tipo of tiposAvaliacao; track tipo.codigo) {
+                <mat-option [value]="tipo.codigo">{{ tipo.nome }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          @if(formulario.value.tipoAvaliacao === 'P') {
+          <div class="col-12 col-lg-3">
+            <mat-form-field class="w-100 pb-1">
+              <mat-label>Pontos</mat-label>
+              <input
+                matInput
+                type="text"
+                appNumberMask
+                [formControl]="pontos"
+              />
+              @if(erroPontos()) {
+              <mat-error>{{ erroPontos() }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          }
+          <div class="col-12">
+            <mat-form-field class="w-100 pb-1">
+              <mat-label>Descrição</mat-label>
+              <input matInput type="text" formControlName="descricao" />
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-6">
+            <mat-form-field class="w-100 pb-1">
+              <mat-label>Natureza do Registro</mat-label>
+              <mat-select formControlName="naturezaRegistro">
+                @for(tipo of tiposNatureza; track tipo.codigo) {
+                <mat-option [value]="tipo.codigo">{{ tipo.nome }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-6">
+            <mat-form-field class="w-100 pb-1">
+              <mat-label>Tipo de Rotina</mat-label>
+              <mat-select formControlName="tipoAtualizacao">
+                @for(tipo of tiposAtualizacao; track tipo.codigo) {
+                <mat-option [value]="tipo.codigo">{{ tipo.nome }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          @if(formulario.value.tipoAtualizacao === 'M') {
+          <div class="col-12 col-lg-3">
+            <mat-form-field class="w-100 pb-1">
+              <mat-label>Periodicidade</mat-label>
+              <input
+                matInput
+                type="text"
+                appDaysMask
+                [formControl]="periodicidade"
+              />
+              @if(erroPerodicidade()) {
+              <mat-error>{{ erroPerodicidade() }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          }
+        </div>
+      </mat-card-content>
+      <mat-card-actions [align]="'end'" class="d-flex gap-1">
+        <button matButton="tonal" (click)="cancelar()">Cancelar</button>
+        <button matButton="filled">Confirmar</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</form>
