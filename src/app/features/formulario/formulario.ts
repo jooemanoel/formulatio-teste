@@ -11,60 +11,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { RouterModule } from '@angular/router';
 import { DaysMaskDirective } from '../../shared/directives/days-mask-directive';
-import { NumberMaskDirective } from '../../shared/directives/number-mask-directive';
-
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-
-export function notZeroValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = parseInt(control.value);
-    if (value === 0) {
-      return { notZero: true };
-    }
-    return null;
-  };
-}
-
-export function minMinus999Validator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = parseInt(control.value);
-    if (value < -99) {
-      return { min: true };
-    }
-    return null;
-  };
-}
-
-export function max999Validator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = parseInt(control.value);
-    if (value > 99) {
-      return { max: true };
-    }
-    return null;
-  };
-}
-
-export function minOneValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = parseInt(control.value);
-    if (value < 1) {
-      return { min: true };
-    }
-    return null;
-  };
-}
-
-export function max730Validator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = parseInt(control.value);
-    if (value > 730) {
-      return { max: true };
-    }
-    return null;
-  };
-}
+import { PontosMaskDirective } from '../../shared/directives/pontos-mask-directive';
+import {
+  max730Validator,
+  max999Validator,
+  minMinus999Validator,
+  minOneValidator,
+  notZeroValidator,
+} from './validators/validators';
 
 export type FormCriterio = {
   nome: string;
@@ -80,6 +36,7 @@ export type FormCriterio = {
 @Component({
   selector: 'app-formulario',
   imports: [
+    RouterModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
@@ -87,20 +44,13 @@ export type FormCriterio = {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    NumberMaskDirective,
+    PontosMaskDirective,
     DaysMaskDirective,
   ],
   templateUrl: './formulario.html',
   styleUrl: './formulario.css',
 })
 export class Formulario {
-  tema: 'light' | 'dark' = 'dark';
-
-  alternarTema() {
-    this.tema = this.tema === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-bs-theme', this.tema);
-  }
-
   formulario = new FormGroup({
     nome: new FormControl('', Validators.required),
     descricao: new FormControl('', [
@@ -126,17 +76,19 @@ export class Formulario {
     max730Validator(),
   ]);
 
-  dataUltimaDivulgacao = new FormControl('');
+  dataUltimaDivulgacao = new FormControl<Date | null>(null);
 
   tiposAvaliacao = [
     { codigo: 'E', nome: 'Elegibilidade' },
     { codigo: 'P', nome: 'Pontuação' },
   ];
+
   tiposNatureza = [
     { codigo: 1, nome: 'MCI' },
     { codigo: 2, nome: 'CNAE' },
     { codigo: 3, nome: 'CPF / CNPJ' },
   ];
+
   tiposAtualizacao = [
     { codigo: 'A', nome: 'Automática' },
     { codigo: 'M', nome: 'Manual' },
@@ -182,10 +134,13 @@ export class Formulario {
   }
 
   formInvalido() {
-    if(this.formulario.invalid) return true;
-    if(this.formulario.value.tipoAvaliacao === 'P' && this.pontos.invalid) return true;
-    if(this.formulario.value.tipoAtualizacao === 'M' && this.periodicidade.invalid) return true;
-    // if(this.formulario.value.tipoAtualizacao === 'M' && this.dataUltimaDivulgacao.invalid) return true;
-    return false;
+    return (
+      this.formulario.invalid ||
+      (this.formulario.value.tipoAvaliacao === 'P' && this.pontos.invalid) ||
+      (this.formulario.value.tipoAtualizacao === 'M' &&
+        this.periodicidade.invalid) ||
+      (this.formulario.value.tipoAtualizacao === 'M' &&
+        this.dataUltimaDivulgacao.invalid)
+    );
   }
 }

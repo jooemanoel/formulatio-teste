@@ -2,21 +2,21 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { NumberMaskDirective } from './number-mask-directive';
+import { PontosMaskDirective } from './pontos-mask-directive';
 
 @Component({
-  template: `<input type="text" [(ngModel)]="value" appNumberMask />`,
+  template: `<input type="text" [(ngModel)]="value" appPontosMask />`,
 })
 class TestComponent {
   value = '';
 }
 
-describe('NumberMaskDirective', () => {
+describe(PontosMaskDirective.name, () => {
   let fixture: ComponentFixture<TestComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule, NumberMaskDirective],
+      imports: [FormsModule, PontosMaskDirective],
       declarations: [TestComponent],
     });
     fixture = TestBed.createComponent(TestComponent);
