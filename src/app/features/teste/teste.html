@@ -3,5 +3,9 @@
     <mat-card-content>
         Asdf
     </mat-card-content>
+    <mat-card-actions [align]="'end'" class="d-flex gap-1">
+        <button matButton="tonal" (click)="testar()">Testar</button>
+        <button matButton="filled" routerLink="/teste">Confirmar</button>
+      </mat-card-actions>
   </mat-card>
 </div>

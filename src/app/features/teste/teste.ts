@@ -1,4 +1,5 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
 /** Entidade */
@@ -9,23 +10,22 @@ export class Compra {
 /** Aggregate Root */
 export class ListaCompras {
   constructor(
-    readonly compras: Compra[] = [],
+    public compras: Compra[] = [],
     readonly dono: string = '',
     readonly criadoEm: Date = new Date()
   ) {}
-
   adicionar(compra: Compra): ListaCompras {
-    // regra de negócio: não permitir compras duplicadas
-    if (this.compras.some((c) => c.descricao === compra.descricao)) {
-      throw new Error(`Compra "${compra.descricao}" já existe na lista.`);
-    }
-
     // retorna nova instância (immutabilidade) → garante atualização no signal
     return new ListaCompras(
       [...this.compras, compra],
       this.dono,
       this.criadoEm
     );
+  }
+
+  adicionar2(compra: Compra): ListaCompras {
+    this.compras = this.compras.concat(compra);
+    return this;
   }
 
   total(): number {
@@ -36,19 +36,29 @@ export class ListaCompras {
 @Component({
   selector: 'app-teste',
   standalone: true,
-  imports: [MatCardModule],
+  imports: [MatCardModule, MatButtonModule],
   templateUrl: './teste.html',
   styleUrl: './teste.css',
 })
 export class Teste {
   compras = signal(new ListaCompras([], 'João'));
-
+  compras2 = signal(new ListaCompras([], 'João'));
+  teste = signal({ teste: 1 });
+  efeito = effect(() => {
+    console.log(this.compras());
+  });
+  efeito2 = effect(() => {
+    console.log(this.compras2());
+  });
+  efeitoTeste = effect(() => {
+    console.log(this.teste());
+  });
   adicionar(descricao: string, valor: number) {
-    try {
-      this.compras.set(this.compras().adicionar(new Compra(descricao, valor)));
-    } catch (e) {
-      console.error(e);
-      // Aqui poderia ser exibida uma notificação no UI
-    }
+    this.compras.set(this.compras().adicionar(new Compra(descricao, valor)));
+    this.compras2.set(this.compras2().adicionar(new Compra(descricao, valor)));
+    this.teste.set({ teste: 1 });
+  }
+  testar() {
+    this.adicionar('qwer', 1);
   }
 }
